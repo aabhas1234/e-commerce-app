@@ -2,13 +2,13 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ##Note:
 
-This is a ongoing process where i will be updating the latest code in this repository and below are the features that will be there in the finally built full stack web application:
-The app is an e-commerce platform built using the MERN stack.
-It features an advanced recommendation system powered by the ChatGPT API.
-The recommendation system suggests related products based on user-generated descriptions.
-The app enhances the user experience by streamlining product discovery.
-Users can find relevant products without needing to enter specific item names.
-The platform improves search efficiency and boosts customer satisfaction through intuitive navigation and product suggestions.
+This is a ongoing project where i will be updating the latest code in this repository and below are the features that will be there in the finally built full stack web application:
+-The app is an e-commerce platform built using the MERN stack.
+-It features an advanced recommendation system powered by the ChatGPT API.
+-The recommendation system suggests related products based on user-generated descriptions.
+-The app enhances the user experience by streamlining product discovery.
+-Users can find relevant products without needing to enter specific item names.
+-The platform improves search efficiency and boosts customer satisfaction through intuitive navigation and product suggestions.
 ## Getting Started
 
 First, run the development server:
