@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.vertical-line {
+    width: 1px; /* Thickness of the line */
+    height: 100%; /* Full height of the container */
+    background-color: black; /* Color of the line */
+    margin: 0 10px; /* Space around the line */
+  }
+  
