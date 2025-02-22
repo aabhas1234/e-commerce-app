@@ -24,6 +24,7 @@ const productSchema = new Schema({
         value: { type: String, required: true }, 
       },
     ],
+    imageurls:[]
   });
   
 const ps=mongoose.model('product',productSchema)

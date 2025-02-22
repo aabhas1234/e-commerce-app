@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors'
@@ -5,12 +8,12 @@ import Category from './schemas/category.js';
 import property from './schemas/Property.js';
 import Product from './schemas/productSchema.js';
 import jwt from 'jsonwebtoken'
-import { configDotenv } from 'dotenv';
 import user from './schemas/user.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import gethashed from './hash.js';
 import checkauthentication from './middlewares/checkauthentication.js';
-configDotenv();
+import upload from "./multer_cloudinary_setup.js";
+
 const app=express();
 const port=5000;
 const db='db';
@@ -19,16 +22,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 const secret_key=process.env.SECRET_KEY;
-const uri = 'mongodb+srv://2021meb1258:a1BaV8IojBzSBiVm@cluster0.pvdnd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
-mongoose.connect(uri, {
+mongoose.connect(process.env.mongo_uri, {
     dbName:db,
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
   
 console.log('Connected to MongoDB Atlas');
-//,checkauthentication
 app.get('/api/listedproducts',checkauthentication, async(req,res)=>{
     let arr = await Product.find({});
     //console.log(arr);
@@ -75,6 +76,14 @@ app.get('/api/getproperties/:name', async(req,res)=>{
             res.status(500).send("Internal Server Error");
         })
 })
+//you have to send back to the frontend all the image urls generated here as a array
+app.post('/api/getimageurl', upload.array("images",5),async(req,res)=>{
+  let arr=[];
+  req.files.map((element)=>{
+    arr.push(element.path);
+  })
+  res.send(arr);
+})
 
 app.post('/api/saveproduct', async(req,res)=>{
 
@@ -89,7 +98,9 @@ app.post('/api/saveproduct', async(req,res)=>{
     },{ $set: { property: arr }, 
     price: req.body.productprice,
     description: req.body.productdescription,
-    category:  req.body.productcategory },{new:true, upsert:true});
+    category:  req.body.productcategory,
+    imageurls:  req.body.imageurls,
+   },{new:true, upsert:true});
     console.log("Product data is successfully updated ")
     res.send("Product data is successfully updated ")
 })
@@ -113,6 +124,20 @@ app.post('/api/signup', async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
+app.get('/api/getproductsfromcategories/:categories', async (req,res)=>{
+  console.log("hewooo");
+  try{
+    const result= await Product.find({category: req.params.categories});
+    console.log("products succesfully fetched");
+    res.send(result);
+  } catch(err)
+  {
+    console.error(err);
+    res.status(500).send("internal server error");
+  }
+  
+})
 
 app.post('/api/signin', async (req, res) => {
   console.log("heyy");
