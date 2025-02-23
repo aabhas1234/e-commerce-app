@@ -13,6 +13,7 @@ import bcrypt from 'bcryptjs';
 import gethashed from './hash.js';
 import checkauthentication from './middlewares/checkauthentication.js';
 import upload from "./multer_cloudinary_setup.js";
+import Razorpay from "razorpay";
 
 const app=express();
 const port=5000;
@@ -30,6 +31,52 @@ mongoose.connect(process.env.mongo_uri, {
   });
   
 console.log('Connected to MongoDB Atlas');
+
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
+
+app.post("/api/create-order", async (req, res) => {
+  const { amount } = req.body; 
+
+  const options = {
+    amount: amount * 100, 
+    currency: "INR",
+    payment_capture: 1,
+  };
+
+  try {
+    const order = await razorpay.orders.create(options);
+    res.json({ orderId: order.id });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 app.get('/api/listedproducts',checkauthentication, async(req,res)=>{
     let arr = await Product.find({});
     //console.log(arr);
