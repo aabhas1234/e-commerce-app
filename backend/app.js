@@ -9,6 +9,7 @@ import property from './schemas/Property.js';
 import Product from './schemas/productSchema.js';
 import jwt from 'jsonwebtoken'
 import user from './schemas/user.js';
+import buyer from './schemas/buyer.js'
 import bcrypt from 'bcryptjs';
 import gethashed from './hash.js';
 import checkauthentication from './middlewares/checkauthentication.js';
@@ -54,26 +55,6 @@ app.post("/api/create-order", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -172,6 +153,54 @@ app.post('/api/signup', async (req, res) => {
   }
 });
 
+app.get('/api/gettoken_buyer', async(req,res)=>{
+
+  try
+  {
+    const token = request.headers.authorization.split(" ")[1];
+    const payload= jwt.verify(token, secret_key);
+    console.log(payload);
+    res.json({payload,message: "payload successfully fetched"});
+  }
+  catch{
+    res.status(500).json({message: "Internal Server Error "});
+  }
+})
+
+app.post('/api/getbuyerdetails', async(res,res)=>{
+  try{
+      const payload= await buyer.findOne({email: req.body.email});
+        res.json({message: "Buyer Successfully Found", payload});
+  }
+  catch{
+    res.json({message: "Internal server error!!"});
+  }
+})
+
+
+app.post('/api/signup_buyer', async (req, res) => {
+  console.log("heyaaa");
+  try {
+    const response = await buyer.findOne({ email: req.body.email });
+    if (!response) {
+      const hashedpassword= await gethashed(req.body.password);
+      await buyer.create({
+        email: req.body.email,
+        password: hashedpassword,
+        pincode: req.body.pincode,
+        state: req.body.state,
+        address:req.body.address
+      });
+      res.send("User created");
+    } else {
+      res.send("User Already Present");
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 app.get('/api/getproductsfromcategories/:categories', async (req,res)=>{
   console.log("hewooo");
   try{
@@ -215,6 +244,33 @@ app.post('/api/signin', async (req, res) => {
 });
 
 
+app.post('/api/signin_buyer', async (req, res) => {
+  console.log("heyy");
+  try {
+    const response = await buyer.findOne({ email: req.body.email });
+
+    if (!response) {
+      res.status(404).send({message:"User not Present, Please Signup first"});
+      return; 
+    }
+
+    const isValid = await bcrypt.compare(req.body.password, response.password);
+    if (isValid) {
+      const token = jwt.sign(
+        { email: req.body.email },
+        secret_key,
+        { expiresIn: '1h' }
+      );
+      const message = "User Successfully Logged in!!";
+      res.status(200).send({ token, message, redirect: '/home' });
+    } else {
+      res.status(401).send({message:"Invalid Credentials"});
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({message:"Internal Server Error"});
+  }
+});
 
 app.use(express.static('public'))
 

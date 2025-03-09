@@ -11,10 +11,10 @@ const CheckoutButton = ({ amount }) => {
     const { orderId } = await res.json();
 
     const options = {
-      key: "your_razorpay_key", // Replace with actual key
+      key: import.meta.env.VITE_Test_key_id, // Replace with actual key
       amount: amount * 100, // Convert ₹ to paise
       currency: "INR",
-      name: "Your Store",
+      name: "Aabhas's Store",
       order_id: orderId,
       handler: function (response) {
         console.log("Payment Successful:", response);

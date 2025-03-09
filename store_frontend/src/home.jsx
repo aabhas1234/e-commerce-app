@@ -1,10 +1,25 @@
 import React, { useEffect, useState } from 'react'
-
+import { UseCart } from './contexts/cart_context';
+import { useNavigate } from 'react-router-dom';
 const App = () => {
+
+  const navigate= useNavigate();
 
   let [categories, setcategories]=useState([]);
   let [map1,setmap1]=useState(new Map());
   let [flag,setflag]=useState(false);
+
+  const {addtocart, removefromcart }=UseCart();
+
+  const handler1=(obj)=>{
+    addtocart(obj);
+    alert ("Product just added to the cart , you can check for updates on the cart page!!");
+  };
+
+  const handler2=()=>{
+    navigate('/cart')
+  }
+
   //`http://localhost:5000/api/categories`
   const fetch_categories=async()=>{
     //console.log("heyaa");
@@ -48,7 +63,7 @@ const App = () => {
         <div className='flex gap-3 text-white'>
           <button className='bg-black p-1 rounded-md'>Home</button>
           <button className='bg-black p-1 rounded-md'>Account</button>
-          <button className='bg-black p-1 rounded-md'>Cart</button>
+          <button onClick={handler2} className='bg-black p-1 rounded-md'>Cart</button>
           <button className='bg-black p-1 rounded-md'>Signout</button>
         </div>
         </div>
@@ -67,7 +82,7 @@ const App = () => {
                   <div className='flex justify-center text-center text-white'>Name: {obj.name}</div>
                   <div>
                     <div className='flex justify-center text-center text-white'>Price: ${obj.price}</div>
-                    <button className='flex justify-center text-center bg-black w-full rounded-md text-white'>Add to Cart</button>
+                    <button onClick={()=>(handler1(obj))} className='flex justify-center text-center bg-black w-full rounded-md text-white'>Add to Cart</button>
                   </div>
                 </div>))
               }

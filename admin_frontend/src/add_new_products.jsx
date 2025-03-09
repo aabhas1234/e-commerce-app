@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom';
 
 const add_new_products = () => {
-    const location = useLocation(); // Get location object
-    const { productname, productprice, productdescription } = location.state || {}; // Extract state variables
+    const location = useLocation(); 
+    const { productname, productprice, productdescription } = location.state || {}; 
 
     console.log(`${productname}  ${productprice}  ${productdescription}`);
     const [result, setresult] = useState([]);
