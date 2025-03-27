@@ -85,3 +85,4 @@ Loan Entries Manager is a full-stack web application built using Node.js + Expre
   ## Deployment
     frontend:Vercel
     backend: render
+  ## The App is Live at: [Loan Entries Manager App] https://loan-manager-frontend.vercel.app/
