@@ -63,14 +63,6 @@ This project aims to replicate a real-world multi-vendor eCommerce platform wher
 
 ---
 
-## 🚀 Deployment
-
-- **Live Store**: [Add Link Here]
-- **Admin Panel**: [Add Link Here]
-- **Backend API**: [Add Link Here or hosted info]
-
----
-
 ## 📌 Future Improvements
 
 - 🧾 Invoice generation for orders  
