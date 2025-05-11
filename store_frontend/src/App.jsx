@@ -1,25 +1,63 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import Home from './home.jsx';
+import { createBrowserRouter, RouterProvider, Link } from 'react-router-dom';
+import Landing_page from './landing_page.jsx';
 import Authentication from './Authentication.jsx'
 import Signin from './signin.jsx'
 import Signup from './signup.jsx'
 import Account from './account.jsx'
 import { Cartprovider } from './contexts/cart_context.jsx';
+import Cards_home from './components/cards_home.jsx';
 import Cart from './cart.jsx';
+import Home_auth from './components/auth_components/home_auth.jsx';
+import Home from './home.jsx';
 function App() {
+
+  const router= createBrowserRouter([
+    {
+      path:'/',
+      element:<Landing_page/>,
+      children:[
+        {
+          path:"",
+          element:<Authentication/>,
+          children:[
+            {
+              path:'signin',
+              element:<Signin/>
+            },
+            {
+              path:'signup',
+              element:<Signup/>
+            },
+            {
+              path:"",
+              element:<Home_auth/>
+            }
+            
+          ]
+        },
+       
+       
+      ]
+    },
+    {
+      path:"/home",
+      element:<Home/>,
+      children:[
+        {
+          path:"",
+          element:<Cards_home/>
+        },
+        {
+          path:"cart",
+          element:<Cart/>
+        },
+      ]
+    }
+  ])
 
   return (
     <Cartprovider>
-      <Router >
-        <Routes>
-          <Route path='/' element={<Authentication />}></Route>
-          <Route path='/home' element={<Home />}></Route>
-          <Route path='/signin' element={<Signin />}></Route>
-          <Route path='/signup' element={<Signup />}></Route>
-          <Route path='/account' element={<Account />}></Route>
-          <Route path='/cart' element={<Cart />}></Route>
-        </Routes>
-      </Router>
+      <RouterProvider router={router} />
     </Cartprovider>
 
   )

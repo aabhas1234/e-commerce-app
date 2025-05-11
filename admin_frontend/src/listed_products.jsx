@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-
+import { useProvider } from './createcontext.jsx';
 
 const listed_products = () => {
     const navigate=useNavigate();
     const [res, setres] = useState([]);
     const [flag, setflag] = useState(false);
     const root = import.meta.env.VITE_ROOT_URL;
+    const fetch_details=useProvider();
     //console.log(root);
     const handler1=(value)=>{
         console.log(value.name);
@@ -18,12 +19,16 @@ const listed_products = () => {
         console.log("ok");
         //localStorage.getItem("authtoken")
         let token = localStorage.getItem("authtoken");
+        const payload=await fetch_details();
         const result = await fetch(`${root}/listedproducts`, {
-            method: 'GET',
+            method: 'POST',
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
+            body:JSON.stringify({
+                payload: payload,
+            })
         })
                
         console.log("hello");
@@ -47,11 +52,11 @@ const listed_products = () => {
             {flag === false ? <div>Loading...</div> :
 
                 res.map((val) => (
-                    <div className='flex space-x-3 my-2 border-black border-2 '>
-                        <div>{val.name}</div>
+                    <div className='flex space-x-3 w-fit p-2 rounded-xl my-2 bg-gray-600 border-2 '>
+                        <div className='font-bold text-white'>{val.name}</div>
                         <div className='flex space-x-1'>
-                            <button className='bg-blue-600 p-1' onClick={()=>{handler1(val)}}>Edit</button>
-                            <div className='bg-blue-600 p-1'>Delete</div>
+                            <button className='bg-white text-black p-1 rounded-md' onClick={()=>{handler1(val)}}>Edit</button>
+                            <div className='bg-white text-black p-1 rounded-md'>Delete</div>
                         </div>
                     </div>
                 ))

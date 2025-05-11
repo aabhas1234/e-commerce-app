@@ -11,7 +11,7 @@ const Categories = () => {
 
   const post_data= async()=>{
     
-    await fetch(`http://localhost:5000/api/categories`,{
+   const res= await fetch(`http://localhost:5000/api/categories`,{
       method: 'POST',           
           headers: {
             'Content-Type': 'application/json', 
@@ -22,6 +22,9 @@ const Categories = () => {
               propertyValue:vn
               })
             });
+
+    const response= await res.json();
+    alert(response.message);
   }
   const handler5=()=>{
     if(cn!="" && vn!="" && kn!="")
@@ -32,19 +35,19 @@ const Categories = () => {
  
   const handler1 =(event)=>{
     let temp=event.target.value;
-    setTimeout(()=>{setcn(temp)},1000);
+    setcn(temp);
   }
   ////////////////
   const handler2 =(event)=>{
     let temp=event.target.value;
-    setTimeout(()=>{setkn(temp)},1000);
+    setkn(temp);
   }
   const handler3 =()=>{
    setflag(!flag)
   }
   const handler4 =(event)=>{
     let temp=event.target.value;
-    setTimeout(()=>{setvn(temp)},1000);
+    setvn(temp);
   }
   ////////////////////
   return (

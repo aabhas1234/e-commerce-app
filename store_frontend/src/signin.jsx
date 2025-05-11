@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
+import photo_bg from '../public/bg.jpg'
 import { useNavigate } from 'react-router-dom';
+import TextField from '@mui/material/TextField';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { blue, lime, purple } from '@mui/material/colors';
+import Button from '@mui/material/Button';
+
+
+
 
 const signin = () => {
 
@@ -40,16 +48,16 @@ const signin = () => {
 
 
     return (
-         <div className='bg-gray-700 p-3 text-center'>
-            <div className='m-6 text-left'>
-                <label htmlFor='email' className='mr-4 text-white'>Email:</label>
-                <input type='email' name='email' id='email' className='rounded-md' onChange={handler1}></input>
+         <div className='bg-blue-50  relative p-3 text-center w-1/2 mx-auto mt-[5rem] rounded-md h-fit'>
+            <div className='my-3'>
+                <TextField className='mx-auto w-1/2' id="outlined-basic" label="Email" variant="outlined" onChange={handler1} />
             </div>
-            <div className='m-6 text-left'>
-                <label htmlFor='password ' className='mr-4 text-white' >Password:</label>
-                <input type='password' name='password' id='password' className='rounded-md' onChange={handler2}></input>
+            <div className='my-3'>
+                <TextField className='mx-auto w-1/2 ' id="outlined-basic" label="Password" variant="outlined" onChange={handler2} />
             </div>
-            <button className='text-white bg-blue-950 p-2 m-4 rounded-md' onClick={handler3}>login</button>
+            <br/>
+            <Button className='  rounded-md' variant="contained" onClick={handler3}>Login</Button>
+
         </div>
     )
 }

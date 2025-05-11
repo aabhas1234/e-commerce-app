@@ -1,15 +1,26 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-
+import TextField from '@mui/material/TextField';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { blue, lime, purple } from '@mui/material/colors';
+import Button from '@mui/material/Button';
 const signup = () => {
 
     const navigate = useNavigate();
 
     const [email, setemail] = useState("");
     const [password, setpassword] = useState("");
-    const [address,setaddress]= useState("");
-    const [state, setstate]=useState("");
-    const [pincode,setpincode]=useState(0);
+    const [address, setaddress] = useState("");
+    const [state, setstate] = useState("");
+    const [pincode, setpincode] = useState(0);
+
+    const theme = createTheme({
+        palette: {
+            primary: {
+                main: blue[500]
+            }
+        },
+    });
 
     const handler1 = (e) => {
         setemail(e.target.value);
@@ -25,8 +36,8 @@ const signup = () => {
     const handler6 = (e) => {
         setstate(e.target.value);
     };
-    
-    const handler7= (e) => {
+
+    const handler7 = (e) => {
         setpincode(e.target.value);
     };
 
@@ -41,7 +52,7 @@ const signup = () => {
             body: JSON.stringify({
                 "email": email,
                 "password": password,
-                "pincode":pincode,
+                "pincode": pincode,
                 "state": state,
                 "address": address
             })
@@ -53,29 +64,34 @@ const signup = () => {
     }
 
     return (
-        <div className='bg-gray-700 p-3'>
-            <div className='font-bold text-white mx-auto w-fit'>WELCOME TO THE SIGNUP PAGE</div>
-            <div className='m-6 text-left'>
-            <label htmlFor='email' className='mr-4 text-white'>Email:</label>
-            <input type='email' name='email' id='email' className='rounded-md bg-gray-400' onChange={handler1}></input>
-            </div>
-            <div className='m-6 text-left'>
-            <label htmlFor='address' className='mr-4 text-white'>Address:</label>
-            <input type='text' name='address' id='address' className='rounded-md  bg-gray-400' onChange={handler5}></input>
-            </div>
-            <div className='m-6 text-left'>
-            <label htmlFor='State' className='mr-4 text-white'>State:</label>
-            <input type='text' name='State' id='State' className='rounded-md  bg-gray-400' onChange={handler6}></input>
-            </div>
-            <div className='m-6 text-left'>
-            <label htmlFor='pincode' className='mr-4 text-white'>Pincode:</label>
-            <input type='number' name='pincode' id='pincode' className='rounded-md  bg-gray-400' onChange={handler7}></input>
-            </div>
-            <div className='m-6 text-left'>
-                <label htmlFor='password ' className='mr-4 text-white' >Password:</label>
-                <input type='password' name='password' id='password' className='rounded-md  bg-gray-400' onChange={handler2}></input>
-            </div>
-            <button className='text-white bg-blue-950 p-2 rounded-md' onClick={handler4}>Signup</button>
+        <div className='relative bg-blue-50 mx-auto rounded-2xl p-3 w-fit '>
+            <ThemeProvider theme={theme}>
+                <div className='font-bold text-black mx-auto w-fit'>WELCOME TO THE SIGNUP PAGE</div>
+                <div className='grid grid-cols-3 '>
+                    <div className='my-3 flex justify-center items-center'>
+                        <TextField className='mx-auto w-1/2' id="outlined-basic" label="Email" variant="outlined" color="primary"  onChange={handler1} />
+                    </div>
+                    <div className='my-3 flex justify-center items-center'>
+                        <TextField className='mx-auto w-1/2' id="outlined-basic" label="Address" variant="outlined" onChange={handler5} />
+                    </div>
+                    <div className='my-3 flex justify-center items-center'>
+                        <TextField className='mx-auto w-1/2' id="outlined-basic" label="State" variant="outlined" onChange={handler6} />
+                    </div>
+                    <div className='my-3 flex justify-center items-center'>
+                        <TextField className='mx-auto w-1/2' id="outlined-basic" label="Pincode" variant="outlined" onChange={handler7} />
+                    </div>
+                    <div className='my-3 flex justify-center items-center'>
+                        <TextField className='mx-auto w-1/2' id="outlined-basic" label="Password" variant="outlined" onChange={handler2} />
+                    </div>
+                </div>
+                <br />
+
+                <div className='mx-auto w-fit'>
+                    <Button className='rounded-md mx-auto' variant="contained" onClick={handler4}>Signup</Button>
+                </div>
+
+            </ThemeProvider>
+
         </div>
     )
 }

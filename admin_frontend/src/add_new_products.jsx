@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom';
-
+import { useProvider } from './createcontext';
 const add_new_products = () => {
     const location = useLocation(); 
     const { productname, productprice, productdescription } = location.state || {}; 
@@ -18,6 +18,10 @@ const add_new_products = () => {
     const [flag1, setflag1] = useState(false);
     const [mapdata, setmapdata] = useState(new Map())
     const [imagefiles, setimagefiles]=useState([]);
+
+    const fetch_details=useProvider(); 
+
+
     const handler1 = (event) => {
         setpn(event.target.value)
     }
@@ -82,14 +86,17 @@ const add_new_products = () => {
         }
         console.log(keys);
         const plainObject = Object.fromEntries(mapdata);
+        const payload=await fetch_details();
+        console.log(payload);
         if (pn != "" && pp != 0 && pd != "" && pc != "" && result1.length != 0) {
-            await fetch(`http://localhost:5000/api/saveproduct`, {
+           const res= await fetch(`http://localhost:5000/api/saveproduct`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     keys: keys,
+                    payload:payload,
                     productname: pn,
                     productprice: pp,
                     productdescription: pd,
@@ -98,12 +105,17 @@ const add_new_products = () => {
                     imageurls: imageurls,
                 })
             })
+            const response =await res.text();
+            alert(response);
         }
         else
             alert("Please choose all the required Fields!! ");
     }
 
+
+   
     useEffect(() => {
+        
         handler4();
         setmapdata(new Map());
     }, []);

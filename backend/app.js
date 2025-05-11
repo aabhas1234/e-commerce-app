@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 dotenv.config();
-
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors'
@@ -15,7 +14,11 @@ import gethashed from './hash.js';
 import checkauthentication from './middlewares/checkauthentication.js';
 import upload from "./multer_cloudinary_setup.js";
 import Razorpay from "razorpay";
-
+import sellerorder from './schemas/orderschema_seller.js';
+import buyerorder from './schemas/orderschema_buyer.js';
+import auth_router_store from './routes/store_routes/auth_routes.js';
+import user_router_store from './routes/store_routes/user_routes.js';
+import product_router_store from './routes/store_routes/product_routes.js';
 const app=express();
 const port=5000;
 const db='db';
@@ -39,6 +42,10 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
+app.use("/",auth_router_store);
+app.use("/",user_router_store);
+app.use("/",product_router_store);
+
 app.post("/api/create-order", async (req, res) => {
   const { amount } = req.body; 
 
@@ -58,45 +65,75 @@ app.post("/api/create-order", async (req, res) => {
 
 
 
-app.get('/api/listedproducts',checkauthentication, async(req,res)=>{
-    let arr = await Product.find({});
+app.post('/api/listedproducts',checkauthentication, async(req,res)=>{
+    let arr = await Product.find({seller:req.body.payload.email});
     //console.log(arr);
     res.json(arr);
 })
 
 app.post('/api/categories',async (req,res)=>{
+   try{ 
     console.log("hey ");
-    let values=[];
-    values.push(req.body.propertyValue );
-    let result= await property.findOneAndUpdate(
-      {key: req.body.propertyKey},
-      {$addToSet:{value:{ $each:values}}},
-      {new : true, upsert:true}
-    );
-    let values1=[];
-    values1.push(result._id);
-    let category=await Category.findOneAndUpdate({name: req.body.categoryName},
-      {$addToSet:{properties:{$each:values1}}},
-    {new:true,upsert:true});
+ 
+    let result= await Category.findOne({name: { $regex: req.body.categoryName, $options: "i" } });
+    if(result)
+    {
+      let arr= result.properties;
+      let flag1= false;
+      let final= arr.map((obj)=>{
+        if(obj.key.toLowerCase()==req.body.propertyKey.toLowerCase())
+        {
+          let a= obj.value;
+          flag1=true;
+          let flag=false;
+          for( let ele of a )
+          {
+            if (ele==req.body.propertyValue)
+            {
+              flag=true;
+              break;
+            }
+          }
+          if(!flag)
+          {
+            a.push(req.body.propertyValue);
+          }
+          return {key: req.body.propertyKey, value: a};
+        }
+        else
+        {
+          return obj;
+        }
+      })
+      if(!flag1)
+      {
+        final.push({key: req.body.propertyKey, value: req.body.propertyValue});
+      }
+      await Category.findOneAndUpdate({name: req.body.categoryName},
+        {properties: final},{new:true,upsert:true});
+    }
+    else
+    {
+      let arr=[];
+      arr.push({key: req.body.propertyKey, value: req.body.propertyValue})
+        await Category.create({name: req.body.categoryName, properties:arr});
+    } 
+  res.json({message: "Category Successfully Updated"});}
+    catch(error)
+    {
+      res.json({message: error});
+    }
+  
+    
 })
 
-app.get('/api/getcategories',async (req, res) => {
-    Category.find({})
-    .then((categories)=>{
-      let arr=categories.map(category=>category.name);
-      console.log("successfull");
-      res.send(arr);
-    })
-    .catch((err)=>{console.error("Error occurred while fetching categories:", err);
-      res.status(500).send("Internal Server Error");});
-  })
 
 
 app.get('/api/getproperties/:name', async(req,res)=>{
   console.log(`ok hey i successfully got ${req.params.name}`);
   Category.findOne({name: req.params.name})
-        .populate('properties')
         .then((category)=>{
+          console.log(category.properties);
             res.send(category.properties);
         })
         .catch((err)=>{
@@ -125,6 +162,7 @@ app.post('/api/saveproduct', async(req,res)=>{
        //   property:  arr
     },{ $set: { property: arr }, 
     price: req.body.productprice,
+    seller:req.body.payload.email,
     description: req.body.productdescription,
     category:  req.body.productcategory,
     imageurls:  req.body.imageurls,
@@ -142,6 +180,7 @@ app.post('/api/signup', async (req, res) => {
       await user.create({
         email: req.body.email,
         password: hashedpassword,
+        name:req.body.name,
       });
       res.send("User created");
     } else {
@@ -153,24 +192,29 @@ app.post('/api/signup', async (req, res) => {
   }
 });
 
-app.get('/api/gettoken_buyer', async(req,res)=>{
 
+
+
+app.get('/api/getemail_seller', async(req,res)=>{
+  console.log("received");
   try
   {
-    const token = request.headers.authorization.split(" ")[1];
+    const token = req.headers.authorization.split(" ")[1];
     const payload= jwt.verify(token, secret_key);
     console.log(payload);
     res.json({payload,message: "payload successfully fetched"});
   }
-  catch{
+  catch(error){
     res.status(500).json({message: "Internal Server Error "});
   }
 })
 
-app.post('/api/getbuyerdetails', async(res,res)=>{
+app.post('/api/getsellerdetails', async(req,res)=>{
+  console.log("ok");
   try{
-      const payload= await buyer.findOne({email: req.body.email});
-        res.json({message: "Buyer Successfully Found", payload});
+    console.log(req.body);
+      const payload= await user.findOne({email: req.body.email});
+        res.json({message: "seller Successfully Found", payload});
   }
   catch{
     res.json({message: "Internal server error!!"});
@@ -178,42 +222,9 @@ app.post('/api/getbuyerdetails', async(res,res)=>{
 })
 
 
-app.post('/api/signup_buyer', async (req, res) => {
-  console.log("heyaaa");
-  try {
-    const response = await buyer.findOne({ email: req.body.email });
-    if (!response) {
-      const hashedpassword= await gethashed(req.body.password);
-      await buyer.create({
-        email: req.body.email,
-        password: hashedpassword,
-        pincode: req.body.pincode,
-        state: req.body.state,
-        address:req.body.address
-      });
-      res.send("User created");
-    } else {
-      res.send("User Already Present");
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
-  }
-});
 
-app.get('/api/getproductsfromcategories/:categories', async (req,res)=>{
-  console.log("hewooo");
-  try{
-    const result= await Product.find({category: req.params.categories});
-    console.log("products succesfully fetched");
-    res.send(result);
-  } catch(err)
-  {
-    console.error(err);
-    res.status(500).send("internal server error");
-  }
-  
-})
+
+
 
 app.post('/api/signin', async (req, res) => {
   console.log("heyy");
@@ -244,33 +255,39 @@ app.post('/api/signin', async (req, res) => {
 });
 
 
-app.post('/api/signin_buyer', async (req, res) => {
-  console.log("heyy");
-  try {
-    const response = await buyer.findOne({ email: req.body.email });
 
-    if (!response) {
-      res.status(404).send({message:"User not Present, Please Signup first"});
-      return; 
-    }
 
-    const isValid = await bcrypt.compare(req.body.password, response.password);
-    if (isValid) {
-      const token = jwt.sign(
-        { email: req.body.email },
-        secret_key,
-        { expiresIn: '1h' }
-      );
-      const message = "User Successfully Logged in!!";
-      res.status(200).send({ token, message, redirect: '/home' });
-    } else {
-      res.status(401).send({message:"Invalid Credentials"});
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({message:"Internal Server Error"});
+app.post('/api/buyerorder', async (req,res) =>{
+
+  try
+ {
+  let arr= req.body.products;
+  let total= 0;
+  console.log(arr);
+  let products=await Promise.all( arr.map(async(ele)=>{
+      let product=await Product.findOne({name: ele.name});     
+      const id= product._id;
+      const qty =ele.quantity;
+      total += qty* ele.price;
+      return { product: id, quantity : qty}; 
+  })) 
+   
+    const reso= await buyerorder.create({
+      products: products,
+      total : total,
+    })
+    
+    res.send({message: "Order successfully created , Thank you for using Aabhas's Ecommerce"});
   }
-});
+    catch(error)
+    {
+      
+      res.send({message: error.message })
+    }
+
+})
+
+
 
 app.use(express.static('public'))
 

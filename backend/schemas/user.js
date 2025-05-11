@@ -8,7 +8,11 @@ email: {
 },
 password:{type:String ,
     required:true,
-}
+},
+name:{
+    type:String,
+    required:true
+},
 
 });
 const User=mongoose.model("user",userSchema);

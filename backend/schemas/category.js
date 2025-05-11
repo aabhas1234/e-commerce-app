@@ -9,8 +9,14 @@ const category=new Schema (
    }
    ,
    properties:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref: "property",
+       key:{
+         type: String ,
+         required:true,
+       },
+       value:[{
+         type: String ,
+         required: true
+       }]
    }]
     
 });
