@@ -4,6 +4,7 @@ import gethashed from '../../hash.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import validator from "validator";
+
 const auth_router=express.Router();
 const secret_key=process.env.SECRET_KEY;
 
@@ -26,9 +27,19 @@ auth_router.post('/api/signin_buyer', async (req, res) => {
           { expiresIn: '1h' }
         );
         const message = "User Successfully Logged in!!";
-        res.status(200).send({ token, message, redirect: '/home' });
+        res.cookie("token",token,{expires:new Date(Date.now()+1*3600000),
+          httpOnly: true,       // Recommended
+          secure: false, 
+        });
+        const response= await buyer.findOne({email: req.body.email});
+        const final={email:`${response.email}`,
+        pincode:`${response.pincode}`,
+        address:`${response.address}`,
+        state:`${response.state}`
+      }
+      res.status(200).json({message, final ,redirect: '/home'});
       } else {
-        res.status(401).send({message:"Invalid Credentials"});
+        res.status(401).json({message:"Invalid Credentials"});
       }
     } catch (error) {
       console.error(error);

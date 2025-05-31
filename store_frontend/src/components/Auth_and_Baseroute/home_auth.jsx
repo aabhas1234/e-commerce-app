@@ -1,6 +1,6 @@
 import React from 'react'
-import Signin from '../../signin'
-import Signup from '../../signup'
+import Signin from './signin'
+import Signup from './signup'
 import { useNavigate } from 'react-router-dom'
 import Button from '@mui/material/Button';
 import { blue } from '@mui/material/colors';

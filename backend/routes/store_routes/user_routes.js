@@ -21,9 +21,15 @@ user_router.get('/api/getemail_buyer', async(req,res)=>{
 user_router.post('/api/getbuyerdetails', async(req,res)=>{
     console.log("ok");
     try{
-      console.log(req.body);
-        const payload= await buyer.findOne({email: req.body.email});
-          res.json({message: "Buyer Successfully Found", payload});
+        console.log(req.body);
+        const response= await buyer.findOne({email: req.body.email});
+        const final={
+        email:`${response.email}`,
+        pincode:`${response.pincode}`,
+        address:`${response.address}`,
+        state:`${response.state}`
+      }
+      res.json({message: "Buyer Successfully Found", final});
     }
     catch{
       res.json({message: "Internal server error!!"});

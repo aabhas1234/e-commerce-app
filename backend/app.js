@@ -19,12 +19,20 @@ import buyerorder from './schemas/orderschema_buyer.js';
 import auth_router_store from './routes/store_routes/auth_routes.js';
 import user_router_store from './routes/store_routes/user_routes.js';
 import product_router_store from './routes/store_routes/product_routes.js';
+import cookieParser from "cookie-parser";
 const app=express();
 const port=5000;
 const db='db';
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors(
+  {
+    origin:'http://localhost:5173',
+    credentials:true
+  }
+));
+
 
 const secret_key=process.env.SECRET_KEY;
 

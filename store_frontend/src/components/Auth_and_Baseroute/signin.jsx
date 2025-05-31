@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
-import photo_bg from '../public/bg.jpg'
 import { useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { blue, lime, purple } from '@mui/material/colors';
 import Button from '@mui/material/Button';
-
+import { User } from '../../contexts/usercontext';
 
 
 
 const signin = () => {
-
+    const {setdata} = User();
     const navigate = useNavigate();
 
-    const [email, setemail] = useState("");
-    const [password, setpassword] = useState("");
+    const [email, setemail] = useState("bhadauriaaabhas561@gmail.com");
+    const [password, setpassword] = useState("1234");
 
     const handler1 = (e) => {
         setemail(e.target.value);
@@ -27,6 +26,7 @@ const signin = () => {
         console.log("hey");
         const res = await fetch(`http://localhost:5000/api/signin_buyer`, {
             method: 'POST',
+            credentials:'include',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -39,9 +39,11 @@ const signin = () => {
         const result=await res.json();
         alert(result.message);
         
-        if(result.token)
+        if(res.status==200)
         {    
-            localStorage.setItem("authtoken", result.token);
+            let {email , pincode , state , address}= result.final;
+            
+            setdata(email,address,pincode, state);
             navigate(result.redirect, { replace: true });
         }
     }
@@ -57,8 +59,7 @@ const signin = () => {
             </div>
             <br/>
             <Button className='  rounded-md' variant="contained" onClick={handler3}>Login</Button>
-
-        </div>
+         </div>
     )
 }
 

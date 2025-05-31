@@ -18,7 +18,7 @@ const header = () => {
         },
     });
     const handler1 = () => {
-        if(!localStorage.getItem("authtoken"))
+        if (!localStorage.getItem("authtoken"))
             alert("Please signin First!!");
         navigate('/home');
     }
@@ -27,16 +27,18 @@ const header = () => {
     }
 
     return (
-        <div className='flex justify-between font-sans font-bold p-2  relative'>
-            <div className='bg-blue-900 text-white p-2 rounded-lg '>E-commerce</div>
-            <ThemeProvider theme={theme}>
-                <div className='flex gap-3 text-black'>
-                    <Button onClick={handler1} variant="contained" startIcon={<HomeIcon/>} color="primary">Home</Button>
-                    <Button variant="contained" color="primary" startIcon={<AccountBoxIcon/>}>Account</Button>
-                    <Button onClick={handler2} variant="contained" startIcon={<ShoppingCartIcon/>} color="primary">Cart</Button>
-                    <Button variant="contained" color="primary" startIcon={<LogoutIcon/>}>Signout</Button>
-                </div>
-            </ThemeProvider>
+        <div className=' '>
+            <div className='flex justify-between font-sans font-bold p-2 bg-blue-100  relative'>
+                <div className='bg-blue-900 text-white p-2 rounded-lg '>E-commerce</div>
+                <ThemeProvider theme={theme}>
+                    <div className='flex gap-3 text-black'>
+                        <Button onClick={handler1} variant="contained" startIcon={<HomeIcon />} color="primary">Home</Button>
+                        <Button variant="contained" color="primary" startIcon={<AccountBoxIcon />}>Account</Button>
+                        <Button onClick={handler2} variant="contained" startIcon={<ShoppingCartIcon />} color="primary">Cart</Button>
+                        <Button variant="contained" color="primary" startIcon={<LogoutIcon />}>Signout</Button>
+                    </div>
+                </ThemeProvider>
+            </div>
 
         </div>)
 }

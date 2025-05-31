@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { UseCart } from './contexts/cart_context'
+import { UseCart } from '../../contexts/cart_context'
+import { User } from '../../contexts/usercontext';
 const cart = () => {
 
     const { map1 } = UseCart();
     const [payload, setpayload] = useState({});
     const [flag, setflag] = useState(false);
     const {addtocart, removefromcart, total }=UseCart();
+    const {getdata}=User();
     const handler1=(key,obj)=>{
         obj.name=key;
         addtocart(obj);
@@ -47,42 +49,9 @@ const cart = () => {
 
 
     const fetch_details = async () => {
-
-        console.log("ok");
-        const token = localStorage.getItem("authtoken");
-        console.log(token);
-        const res = await fetch(`http://localhost:5000/api/getemail_buyer`, {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-        })
-
-        console.log("ok");
-
-        if (res.status !== 500) {
-            const response = await res.json();
-            const res1 = await fetch(`http://localhost:5000/api/getbuyerdetails`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(response.payload),
-            })
-            console.log(res1);
-            const payload_final = await res1.json();
-            console.log(payload_final);
-            setpayload(payload_final.payload);
+            console.log(getdata());
+            setpayload(getdata());
             setflag(true);
-        }
-        else {
-            const response = await res.json();
-            alert(response.message);
-        }
-
-
-
     }
 
     useEffect(() => {
